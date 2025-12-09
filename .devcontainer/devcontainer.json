@@ -1,5 +1,5 @@
 {
-    "name": "devcontainer-astro-template",
+    "name": "toolkit",
     "build": {
         "context": ".",
         "dockerfile": "Dockerfile"
