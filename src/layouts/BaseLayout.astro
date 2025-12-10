@@ -2,7 +2,7 @@
 import HeadSEO from "@/components/core/HeadSEO.astro";
 import Header from "@/components/core/Header.astro";
 
-import { LOCALE } from "@data/config";
+import { LOCALE, SITE } from "@data/config";
 import type { BaseLayoutProps } from "@/lib/types";
 
 interface Props extends BaseLayoutProps {
@@ -30,7 +30,10 @@ const {
         />
     </head>
 
-    <body class="min-h-screen bg-background text-foreground antialiased">
+    <body
+        class="min-h-screen bg-background text-foreground antialiased"
+        data-layout={SITE.enableLayoutWidthToggle ? undefined : "comfort"}
+    >
         <div class="relative isolate flex min-h-screen flex-col">
             <Header />
             <main class="relative z-10 flex flex-1 flex-col">

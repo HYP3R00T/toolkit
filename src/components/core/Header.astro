@@ -54,18 +54,22 @@ const activeSocials = Socials.filter((social) => social.active);
                     }
                 </a>
             </Button>
-            <Separator orientation="vertical" className="hidden lg:block" />
-            <Button
-                id="header-width-toggle"
-                variant="ghost"
-                size="icon"
-                className="hidden md:inline-flex"
-                aria-label="Toggle layout width"
-                aria-pressed="false"
-                title="Wide"
-            >
-                <Icon name="spacing" class="size-5" aria-hidden="true" />
-            </Button>
+            {
+                SITE.enableLayoutWidthToggle && (
+                    <Separator orientation="vertical" className="hidden lg:block" />
+                    <Button
+                        id="header-width-toggle"
+                        variant="ghost"
+                        size="icon"
+                        className="hidden md:inline-flex"
+                        aria-label="Toggle layout width"
+                        aria-pressed="false"
+                        title="Wide"
+                    >
+                        <Icon name="spacing" class="size-5" aria-hidden="true" />
+                    </Button>
+                )
+            }
             <Separator orientation="vertical" className="hidden lg:block" />
             <ThemeToggle />
 
@@ -141,7 +145,7 @@ const activeSocials = Socials.filter((social) => social.active);
     </div>
 </div>
 
-<script>
+    <script>
     document.addEventListener("astro:page-load", () => {
         const menuButtonId = "mobile-menu-btn";
         const menuPanelId = "mobile-menu";
@@ -186,7 +190,12 @@ const activeSocials = Socials.filter((social) => social.active);
                 setMenuState(false);
             }
         });
+    });
+    </script>
 
+{ SITE.enableLayoutWidthToggle && (
+    <script>
+    document.addEventListener("astro:page-load", () => {
         // Global layout width toggle
         const layoutStorageKey = "layout-width-mode";
         const headerToggle = document.getElementById("header-width-toggle");
@@ -218,4 +227,5 @@ const activeSocials = Socials.filter((social) => social.active);
             applyLayoutMode(next);
         });
     });
-</script>
+    </script>
+)}

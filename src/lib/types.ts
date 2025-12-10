@@ -27,3 +27,18 @@ export interface SocialObjects {
     active: boolean;
     linkTitle?: string; // Optional title for the link
 }
+
+// For site-level configuration
+export interface SiteConfig {
+    website: string;
+    author: string;
+    repo: string;
+    branch?: string;
+    title: string;
+    description: string;
+    image?: any;
+    imageAlt?: string;
+    twitterHandle?: string;
+    starCountThreshold?: number;
+    enableLayoutWidthToggle?: boolean;
+}
