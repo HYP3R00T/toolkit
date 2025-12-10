@@ -4,7 +4,7 @@ import type { NavItem, SocialObjects, SiteConfig } from "@/lib/types";
 export const SITE: SiteConfig = {
     website: "https://cloudchallenges.hyperoot.dev",
     author: "Rajesh",
-    repo: "https://github.com/cloudchallenges/cloudchallenges",
+    repo: "https://github.com/HYP3R00T/toolkit",
     branch: "main",
     title: "Cloud Challenges",
     description:

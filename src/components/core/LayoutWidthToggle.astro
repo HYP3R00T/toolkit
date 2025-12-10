@@ -16,40 +16,11 @@ const WIDE = "wide";
     aria-pressed="false"
     title="Wide"
 >
-    <Icon name="logo" class="size-4" aria-hidden="true" />
+    <Icon name="spacing" class="size-5" aria-hidden="true" />
 </Button>
 
 <script>
-    document.addEventListener("astro:page-load", () => {
-        const toggle = document.getElementById("layout-width-toggle");
-        const root = document.body;
-        const STORAGE_KEY = "layout-width-mode";
-        const COMFORT = "comfort";
-        const WIDE = "wide";
+    import { initLayoutToggle } from "@/lib/layout";
 
-        if (!toggle || !root) return;
-
-        const applyMode = (mode: string) => {
-            const nextMode = mode === WIDE ? WIDE : COMFORT;
-            root.dataset.layout = nextMode;
-            toggle.setAttribute(
-                "aria-pressed",
-                nextMode === WIDE ? "true" : "false",
-            );
-            toggle.setAttribute(
-                "title",
-                nextMode === WIDE ? "Wide" : "Comfort",
-            );
-            localStorage.setItem(STORAGE_KEY, nextMode);
-        };
-
-        const saved = localStorage.getItem(STORAGE_KEY);
-        applyMode(saved || WIDE);
-
-        toggle.addEventListener("click", () => {
-            const current = root.dataset.layout === WIDE ? WIDE : COMFORT;
-            const next = current === WIDE ? COMFORT : WIDE;
-            applyMode(next);
-        });
-    });
+    document.addEventListener("astro:page-load", initLayoutToggle);
 </script>

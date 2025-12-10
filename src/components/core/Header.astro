@@ -2,17 +2,10 @@
 import { Icon } from "astro-icon/components";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/core/ThemeToggle.astro";
+import LayoutWidthToggle from "@/components/core/LayoutWidthToggle.astro";
 import { Separator } from "@/components/ui/separator";
 import { SITE, Socials, navItems } from "@data/config";
-import {
-    getRepoStarCount,
-    formatStarCount,
-    shouldShowStarCount,
-} from "@/lib/github";
 
-const starCount = await getRepoStarCount(SITE.repo);
-const showStarCount = shouldShowStarCount(starCount, SITE.starCountThreshold);
-const formattedStarCount = showStarCount ? formatStarCount(starCount) : "";
 const menuButtonId = "mobile-menu-btn";
 const menuPanelId = "mobile-menu";
 const activeSocials = Socials.filter((social) => social.active);
@@ -33,10 +26,13 @@ const activeSocials = Socials.filter((social) => social.active);
         <div class="ml-auto flex items-center gap-2 lg:h-4">
             <Separator orientation="vertical" className="hidden lg:block" />
             <Button
+                id="github-star-button"
                 variant="ghost"
-                size={showStarCount ? "default" : "icon"}
-                className={showStarCount ? "gap-2" : ""}
+                size="icon"
+                className=""
                 aria-label="GitHub repository"
+                data-repo={SITE.repo}
+                data-threshold={SITE.starCountThreshold}
             >
                 <a
                     href={SITE.repo}
@@ -45,29 +41,23 @@ const activeSocials = Socials.filter((social) => social.active);
                     class="flex gap-2 items-center"
                 >
                     <Icon name="github" class="size-5" />
-                    {
-                        showStarCount && (
-                            <span class="text-xs font-medium text-muted-foreground">
-                                {formattedStarCount}
-                            </span>
-                        )
-                    }
+                    <span
+                        id="github-star-count"
+                        class="text-xs font-medium text-muted-foreground hidden"
+                        aria-live="polite"
+                    >
+                    </span>
                 </a>
             </Button>
             {
                 SITE.enableLayoutWidthToggle && (
-                    <Separator orientation="vertical" className="hidden lg:block" />
-                    <Button
-                        id="header-width-toggle"
-                        variant="ghost"
-                        size="icon"
-                        className="hidden md:inline-flex"
-                        aria-label="Toggle layout width"
-                        aria-pressed="false"
-                        title="Wide"
-                    >
-                        <Icon name="spacing" class="size-5" aria-hidden="true" />
-                    </Button>
+                    <>
+                        <Separator
+                            orientation="vertical"
+                            className="hidden lg:block"
+                        />
+                        <LayoutWidthToggle />
+                    </>
                 )
             }
             <Separator orientation="vertical" className="hidden lg:block" />
@@ -145,87 +135,12 @@ const activeSocials = Socials.filter((social) => social.active);
     </div>
 </div>
 
-    <script>
+<script>
+    import { initGitHubStars } from "@/lib/github";
+    import { initMobileMenu } from "@/lib/menu";
+
     document.addEventListener("astro:page-load", () => {
-        const menuButtonId = "mobile-menu-btn";
-        const menuPanelId = "mobile-menu";
-        const menuBtn = document.getElementById(menuButtonId);
-        const mobileMenu = document.getElementById(menuPanelId);
-        const menuIcon = menuBtn?.querySelector('[data-icon="menu"]');
-        const closeIcon = menuBtn?.querySelector('[data-icon="close"]');
-
-        if (!menuBtn || !mobileMenu) {
-            return;
-        }
-
-        const setMenuState = (isOpen: boolean) => {
-            mobileMenu.classList.toggle("hidden", !isOpen);
-            menuBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-            mobileMenu.setAttribute("aria-hidden", isOpen ? "false" : "true");
-            menuBtn.setAttribute("data-state", isOpen ? "open" : "closed");
-            menuIcon?.classList.toggle("hidden", isOpen);
-            closeIcon?.classList.toggle("hidden", !isOpen);
-            document.body.style.overflow = isOpen ? "hidden" : "";
-        };
-
-        const toggleMenu = () => {
-            const isOpen = !mobileMenu.classList.contains("hidden");
-            setMenuState(!isOpen);
-        };
-
-        menuBtn.addEventListener("click", toggleMenu);
-
-        mobileMenu.querySelectorAll("a").forEach((link) => {
-            link.addEventListener("click", () => setMenuState(false));
-        });
-
-        mobileMenu.addEventListener("click", (event) => {
-            if (event.target === mobileMenu) {
-                setMenuState(false);
-            }
-        });
-
-        window.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") {
-                setMenuState(false);
-            }
-        });
+        initGitHubStars();
+        initMobileMenu();
     });
-    </script>
-
-{ SITE.enableLayoutWidthToggle && (
-    <script>
-    document.addEventListener("astro:page-load", () => {
-        // Global layout width toggle
-        const layoutStorageKey = "layout-width-mode";
-        const headerToggle = document.getElementById("header-width-toggle");
-        const root = document.body;
-        const COMFORT = "comfort";
-        const WIDE = "wide";
-
-        const applyLayoutMode = (mode: string) => {
-            if (!headerToggle || !root) return;
-            const nextMode = mode === WIDE ? WIDE : COMFORT;
-            root.dataset.layout = nextMode;
-            headerToggle.setAttribute(
-                "aria-pressed",
-                nextMode === WIDE ? "true" : "false",
-            );
-            headerToggle.setAttribute(
-                "title",
-                nextMode === WIDE ? "Wide" : "Comfort",
-            );
-            localStorage.setItem(layoutStorageKey, nextMode);
-        };
-
-        const saved = localStorage.getItem(layoutStorageKey);
-        applyLayoutMode(saved || WIDE);
-
-        headerToggle?.addEventListener("click", () => {
-            const current = root.dataset.layout === WIDE ? WIDE : COMFORT;
-            const next = current === WIDE ? COMFORT : WIDE;
-            applyLayoutMode(next);
-        });
-    });
-    </script>
-)}
+</script>
