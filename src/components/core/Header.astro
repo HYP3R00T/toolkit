@@ -60,9 +60,9 @@ const activeSocials = Socials.filter((social) => social.active);
                 variant="ghost"
                 size="icon"
                 className="hidden md:inline-flex"
-                aria-label="Toggle header width"
+                aria-label="Toggle layout width"
                 aria-pressed="false"
-                title="Full"
+                title="Wide"
             >
                 <Icon name="spacing" class="size-5" aria-hidden="true" />
             </Button>
@@ -187,41 +187,35 @@ const activeSocials = Socials.filter((social) => social.active);
             }
         });
 
-        // Header width toggle
-        const layoutStorageKey = "header-width-mode";
-        const headerInner = document.getElementById("header-inner");
+        // Global layout width toggle
+        const layoutStorageKey = "layout-width-mode";
         const headerToggle = document.getElementById("header-width-toggle");
-        // no textual label — we use a simple icon and toggle the button's title instead
+        const root = document.body;
+        const COMFORT = "comfort";
+        const WIDE = "wide";
 
-        const applyHeaderMode = (mode: string) => {
-            if (!headerInner || !headerToggle) return;
-            const isNarrow = mode === "narrow";
+        const applyLayoutMode = (mode: string) => {
+            if (!headerToggle || !root) return;
+            const nextMode = mode === WIDE ? WIDE : COMFORT;
+            root.dataset.layout = nextMode;
             headerToggle.setAttribute(
                 "aria-pressed",
-                isNarrow ? "true" : "false",
+                nextMode === WIDE ? "true" : "false",
             );
-            headerToggle.setAttribute("title", isNarrow ? "Narrow" : "Full");
-            if (isNarrow) {
-                headerInner.classList.add("max-w-7xl", "mx-auto");
-            } else {
-                headerInner.classList.remove("max-w-7xl", "mx-auto");
-            }
-            localStorage.setItem(
-                layoutStorageKey,
-                isNarrow ? "narrow" : "full",
+            headerToggle.setAttribute(
+                "title",
+                nextMode === WIDE ? "Wide" : "Comfort",
             );
+            localStorage.setItem(layoutStorageKey, nextMode);
         };
 
         const saved = localStorage.getItem(layoutStorageKey);
-        applyHeaderMode(saved === "narrow" ? "narrow" : "full");
+        applyLayoutMode(saved || WIDE);
 
         headerToggle?.addEventListener("click", () => {
-            const current =
-                headerToggle.getAttribute("aria-pressed") === "true"
-                    ? "narrow"
-                    : "full";
-            const next = current === "narrow" ? "full" : "narrow";
-            applyHeaderMode(next);
+            const current = root.dataset.layout === WIDE ? WIDE : COMFORT;
+            const next = current === WIDE ? COMFORT : WIDE;
+            applyLayoutMode(next);
         });
     });
 </script>

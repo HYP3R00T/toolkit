@@ -171,4 +171,20 @@
     [role="button"]:not(:disabled) {
         @apply cursor-pointer;
     }
+
+    body[data-layout="comfort"] #header-inner {
+        @apply max-w-7xl mx-auto;
+    }
+
+    body[data-layout="comfort"] #main-content {
+        @apply max-w-7xl;
+    }
+
+    body[data-layout="wide"] #header-inner {
+        @apply max-w-full;
+    }
+
+    body[data-layout="wide"] #main-content {
+        @apply max-w-full;
+    }
 }
