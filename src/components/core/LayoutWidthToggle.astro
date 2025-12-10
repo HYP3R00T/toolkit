@@ -1,0 +1,51 @@
+---
+import { Button } from "@/components/ui/button";
+
+const STORAGE_KEY = "layout-width-mode";
+const COMFORT = "comfort";
+const WIDE = "wide";
+---
+
+<Button
+    id="layout-width-toggle"
+    variant="ghost"
+    size="icon"
+    className="hidden md:inline-flex"
+    aria-label="Toggle layout width"
+    aria-pressed="false"
+>
+    <span data-mode-label class="text-xs font-medium"> Width </span>
+</Button>
+
+<script>
+    document.addEventListener("astro:page-load", () => {
+        const toggle = document.getElementById("layout-width-toggle");
+        const labelEl = toggle?.querySelector("[data-mode-label]");
+        const root = document.body;
+        const STORAGE_KEY = "layout-width-mode";
+        const COMFORT = "comfort";
+        const WIDE = "wide";
+
+        if (!toggle || !labelEl || !root) return;
+
+        const applyMode = (mode: string) => {
+            const nextMode = mode === WIDE ? WIDE : COMFORT;
+            root.dataset.layout = nextMode;
+            toggle.setAttribute(
+                "aria-pressed",
+                nextMode === WIDE ? "true" : "false",
+            );
+            labelEl.textContent = nextMode === WIDE ? "Wide" : "Comfort";
+            localStorage.setItem(STORAGE_KEY, nextMode);
+        };
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+        applyMode(saved === WIDE ? WIDE : COMFORT);
+
+        toggle.addEventListener("click", () => {
+            const current = root.dataset.layout === WIDE ? WIDE : COMFORT;
+            const next = current === WIDE ? COMFORT : WIDE;
+            applyMode(next);
+        });
+    });
+</script>
