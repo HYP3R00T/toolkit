@@ -1,34 +1,38 @@
-// @ts-check
-import { defineConfig } from "astro/config";
+import mdx from '@astrojs/mdx'
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'astro/config'
+import AutoImport from 'astro-auto-import'
+import icon from 'astro-icon'
 
-import tailwindcss from "@tailwindcss/vite";
-
-import react from "@astrojs/react";
-
-import icon from "astro-icon";
-
-// https://astro.build/config
 export default defineConfig({
-    prefetch: true,
-
-    vite: {
-        plugins: [tailwindcss()],
+  site: 'https://rajeshdas.dev',
+  prefetch: true,
+  vite: {
+    plugins: [tailwindcss()],
+  },
+  markdown: {
+    shikiConfig: {
+      theme: 'css-variables',
+      defaultColor: false,
     },
-
-    integrations: [
-        icon({
-            iconDir: "src/assets/icons",
-            svgoOptions: {
-                plugins: [
-                    {
-                        name: "convertColors",
-                        params: {
-                            currentColor: true,
-                        },
-                    },
-                ],
+  },
+  integrations: [
+    icon({
+      iconDir: 'src/assets/icons',
+      svgoOptions: {
+        plugins: [
+          {
+            name: 'convertColors',
+            params: {
+              currentColor: true,
             },
-        }),
-        react()
-    ],
-});
+          },
+        ],
+      },
+    }),
+    AutoImport({
+      imports: ['./src/components/core/Video.astro'],
+    }),
+    mdx(),
+  ],
+})
