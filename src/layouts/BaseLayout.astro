@@ -1,64 +1,34 @@
 ---
-import HeadSEO from "@/components/core/HeadSEO.astro";
+import { SITE } from "@data/config";
+import CodeCopyButton from "@/components/core/CodeCopyButton.astro";
 import Header from "@/components/core/Header.astro";
-
-import { LOCALE, SITE } from "@data/config";
+import HeadSEO from "@/components/core/HeadSEO.astro";
 import type { BaseLayoutProps } from "@/lib/types";
 
-interface Props extends BaseLayoutProps {
-    fullWidth?: boolean;
-}
-
-const {
-    title,
-    description,
-    image,
-    imageAlt,
-    contentType,
-    fullWidth = false,
-} = Astro.props as Props;
+const { title, description, image, imageAlt, contentType } =
+  Astro.props as BaseLayoutProps;
 ---
 
-<html lang={LOCALE.lang ?? "en"}>
-    <head>
-        <HeadSEO
-            title={title}
-            description={description}
-            image={image}
-            imageAlt={imageAlt}
-            contentType={contentType}
-        />
-    </head>
+<html lang=`${SITE.lang ?? "en"}`>
+  <head>
+    <HeadSEO
+      title={title}
+      description={description}
+      image={image}
+      imageAlt={imageAlt}
+      contentType={contentType}
+    />
+  </head>
 
-    <body
-        class="min-h-screen bg-background text-foreground antialiased"
-        data-layout={SITE.enableLayoutWidthToggle ? undefined : "comfort"}
-    >
-        {SITE.enableLayoutWidthToggle && (
-            <script is:inline>
-                (function() {
-                    const saved = localStorage.getItem("layout-width-mode");
-                    const mode = saved === "comfort" ? "comfort" : "wide";
-                    document.body.dataset.layout = mode;
-                })();
-            </script>
-        )}
-        <div class="relative isolate flex min-h-screen flex-col">
-            <Header />
-            <main class="relative z-10 flex flex-1 flex-col">
-                {
-                    fullWidth ? (
-                        <slot />
-                    ) : (
-                        <div
-                            id="main-content"
-                            class="mx-auto flex w-full flex-col gap-10 px-4 py-10 lg:gap-14 lg:py-14"
-                        >
-                            <slot />
-                        </div>
-                    )
-                }
-            </main>
+  <body class="flex flex-col">
+    <Header />
+    <div class="flex flex-1">
+      <main class="flex h-full w-full justify-center">
+        <div class="flex w-full flex-col justify-center">
+          <slot />
         </div>
-    </body>
+      </main>
+    </div>
+    <CodeCopyButton />
+  </body>
 </html>
