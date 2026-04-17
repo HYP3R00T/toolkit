@@ -4,6 +4,8 @@ import { defineConfig } from 'astro/config'
 import AutoImport from 'astro-auto-import'
 import icon from 'astro-icon'
 
+import react from '@astrojs/react';
+
 export default defineConfig({
   site: 'https://rajeshdas.dev',
   prefetch: true,
@@ -16,23 +18,19 @@ export default defineConfig({
       defaultColor: false,
     },
   },
-  integrations: [
-    icon({
-      iconDir: 'src/assets/icons',
-      svgoOptions: {
-        plugins: [
-          {
-            name: 'convertColors',
-            params: {
-              currentColor: true,
-            },
+  integrations: [icon({
+    iconDir: 'src/assets/icons',
+    svgoOptions: {
+      plugins: [
+        {
+          name: 'convertColors',
+          params: {
+            currentColor: true,
           },
-        ],
-      },
-    }),
-    AutoImport({
-      imports: ['./src/components/core/Video.astro'],
-    }),
-    mdx(),
-  ],
+        },
+      ],
+    },
+  }), AutoImport({
+    imports: ['./src/components/core/Video.astro'],
+  }), mdx(), react()],
 })
