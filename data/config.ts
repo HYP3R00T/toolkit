@@ -1,34 +1,42 @@
-import setupImage from "@/assets/setup.png";
-import type { NavItem, SocialObjects, SiteConfig } from "@/lib/types";
+import placeholder1 from '@/assets/placeholder1.png'
+import type { NavItem, SiteConfig } from '@/lib/types'
 
 export const SITE: SiteConfig = {
-    website: "https://cloudchallenges.hyperoot.dev",
-    author: "Rajesh",
-    repo: "https://github.com/HYP3R00T/toolkit",
-    branch: "main",
-    title: "Cloud Challenges",
-    description:
-        "CloudChallenges is a collection of real-world cloud scenarios that help you learn by solving practical, hands-on projects.",
-    image: setupImage,
-    imageAlt: "Check out cloudchallenges.hyperoot.dev",
-    twitterHandle: "@HYP3R00T",
-    starCountThreshold: 0,
-    enableLayoutWidthToggle: true
-};
-
-export const LOCALE = {
-    lang: "en",
-};
+  website: 'https://toolkit.rajeshdas.dev',
+  author: 'Rajesh',
+  repo: 'https://github.com/HYP3R00T/toolkit',
+  title: 'Toolkit',
+  description:
+    'A starter template for Astro projects with mise, Biome, pre-commit hooks, and GitHub Actions.',
+  image: placeholder1,
+  imageAlt: 'Check out toolkit.rajeshdas.dev',
+  contentType: 'Portfolio',
+  twitterHandle: '@HYP3R00T',
+  pageSize: 10,
+  lang: 'en',
+}
 
 export const navItems: NavItem[] = [
-    { href: "/challenge", label: "Challenges", special: true },
-];
+  { href: '/components', label: 'Components' },
+]
 
-export const Socials: SocialObjects[] = [
-    {
-        name: "github",
-        href: "https://github.com/HYP3R00T/",
-        linkTitle: `Checkout my GitHub profile`,
-        active: true,
-    }
-];
+export const SOCIAL_LINKS = [
+  {
+    name: 'github',
+    href: 'https://github.com/HYP3R00T',
+    active: true,
+    linkTitle: 'Visit my GitHub profile',
+  },
+  {
+    name: 'linkedin',
+    href: 'https://linkedin.com/in/rajesh-kumar-das',
+    active: true,
+    linkTitle: 'Connect with me on LinkedIn',
+  },
+  {
+    name: 'mail',
+    href: 'mailto:hello@rajeshdas.dev',
+    active: true,
+    linkTitle: 'Send me an email',
+  },
+]
