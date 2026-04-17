@@ -2,11 +2,23 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      - id: check-json
+      - id: check-toml
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-shebang-scripts-are-executable
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.13.9
+    rev: v4.13.10
     hooks:
       - id: commitizen
-        stages: [commit-msg]
+        stages: [ commit-msg ]
+  - repo: https://github.com/biomejs/pre-commit
+    rev: v2.4.12
+    hooks:
+      - id: biome-check
+        exclude: "\\.astro$"
+      - id: biome-format
+        exclude: "\\.astro$"
+      - id: biome-lint
+        exclude: "\\.astro$"
