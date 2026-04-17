@@ -1,19 +1,21 @@
 [tools]
-python = "3.14"
-pre-commit = "latest"
+github-cli = "latest"
+markdownlint-cli2 = "latest"
 node = "lts"
 pnpm = "latest"
+prek = "latest"
+python = "3.14"
 
 [settings]
 experimental = true
-idiomatic_version_file_enable_tools = ["python"]
+lockfile = true
 
 [hooks]
 enter = "bash ./scripts/enter_project.sh"
 
 [env]
+_.file = '.env'                                # for sensitive data
 _.path = ['{{config_root}}/node_modules/.bin']
-_.file = '.env'
 
 [tasks.dev]
 description = "Dev Mode"
@@ -22,3 +24,19 @@ run = "astro dev --host 0.0.0.0"
 [tasks.dicon]
 description = "Downloads an SVG from svgrepo and saves it to src/assets/icons/"
 run = "bash ./scripts/download-icon.sh"
+
+[tasks.lint]
+description = "Run Biome checks"
+run = "biome check ."
+
+[tasks.lint-fix]
+description = "Run Biome checks and apply safe fixes"
+run = "biome check --write ."
+
+[tasks.format]
+description = "Format files with Biome"
+run = "biome format --write ."
+
+[tasks.biome-ci]
+description = "Run Biome CI checks"
+run = "biome ci ."
