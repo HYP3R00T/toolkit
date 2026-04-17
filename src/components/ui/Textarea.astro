@@ -1,0 +1,58 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface TextareaProps extends HTMLAttributes<"textarea"> {
+  placeholder?: string;
+  disabled?: boolean;
+  rows?: number;
+  class?: string;
+  value?: string;
+  name?: string;
+  id?: string;
+  required?: boolean;
+}
+
+const {
+  placeholder = "",
+  disabled = false,
+  rows = 6,
+  class: className,
+  value,
+  name,
+  id,
+  required = false,
+  ...rest
+} = Astro.props as TextareaProps;
+
+const baseClasses =
+  "w-full border bg-transparent px-4 py-4 text-sm resize-none transition-colors focus:outline-none";
+
+const borderClasses = "border-border";
+const textClasses = "text-foreground-1";
+const placeholderClasses = "placeholder:text-foreground-3";
+const focusClasses = "focus:border-foreground-0";
+const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
+
+const classes = [
+  baseClasses,
+  borderClasses,
+  textClasses,
+  placeholderClasses,
+  focusClasses,
+  disabledClasses,
+  className?.trim(),
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<textarea
+  placeholder={placeholder}
+  disabled={disabled}
+  rows={rows}
+  class={classes}
+  name={name}
+  id={id}
+  required={required}
+  {...rest}>{value}</textarea
+>

@@ -1,0 +1,32 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type BadgeVariant = "default" | "outline" | "accent";
+
+interface BadgeProps extends HTMLAttributes<"span"> {
+  variant?: BadgeVariant;
+  class?: string;
+}
+
+const {
+  variant = "default",
+  class: className,
+  ...rest
+} = Astro.props as BadgeProps;
+---
+
+<span
+  class:list={[
+    "inline-block px-3 py-1 text-xs font-medium tracking-wide uppercase w-fit",
+    {
+      "text-foreground-1": variant === "default",
+      "border border-border bg-transparent text-foreground-1":
+        variant === "outline",
+      "bg-accent text-background-0 border border-accent": variant === "accent",
+    },
+    className?.trim(),
+  ]}
+  {...rest}
+>
+  <slot />
+</span>

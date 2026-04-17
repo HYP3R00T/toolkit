@@ -1,19 +1,26 @@
 ---
-import { ClientRouter } from "astro:transitions";
 import { getImage } from "astro:assets";
+import { ClientRouter } from "astro:transitions";
 
 import "@/styles/global.css";
+// Supports weights 100-900
+import "@fontsource-variable/inter";
+// Supports weights 100-800
+import "@fontsource-variable/jetbrains-mono";
+// Supports weights 300-700
+import "@fontsource-variable/space-grotesk";
 
-import type { HeadSEOProps } from "@/lib/types";
 import { SITE } from "@data/config";
+import type { HeadSEOProps } from "@/lib/types";
 
 // Props with fallbacks from SITE config
 const {
-    title = SITE.title,
-    description = SITE.description,
-    image = SITE.image, // string | imported asset | content collection image()
-    imageAlt = SITE.imageAlt,
-    noIndex = false,
+  title = SITE.title,
+  description = SITE.description,
+  image = SITE.image, // string | imported asset | content collection image()
+  imageAlt = SITE.imageAlt,
+  contentType = SITE.contentType,
+  noIndex = false,
 } = Astro.props as HeadSEOProps;
 
 const canonicalURL = new URL(Astro.url);
@@ -24,25 +31,37 @@ const siteUrl = Astro.site ?? SITE.website ?? "http://127.0.0.1:4321";
 let ogImageUrl: string;
 
 if (typeof image === "object" && "src" in image) {
-    // Case 1: Imported asset or content collection image()
+  // Case 1: Imported asset or content collection image()
+  try {
+    const { src } = await getImage({
+      src: image,
+      width: 1200,
+      height: 630,
+      format: "jpeg",
+      quality: 70,
+    });
+    ogImageUrl = new URL(src, siteUrl).toString();
+  } catch {
     ogImageUrl = new URL(image.src, siteUrl).toString();
+  }
 } else if (typeof image === "string" && !image.startsWith("http")) {
-    // Case 2: Local relative path (blogs/assets or similar)
-    try {
-        const { src } = await getImage({
-            src: image,
-            width: 1200,
-            height: 630,
-            format: "webp",
-        });
-        ogImageUrl = new URL(src, siteUrl).toString();
-    } catch {
-        // Fallback: just prefix with siteUrl if optimization fails
-        ogImageUrl = new URL(image, siteUrl).toString();
-    }
+  // Case 2: Local relative path (blogs/assets or similar)
+  try {
+    const { src } = await getImage({
+      src: image,
+      width: 1200,
+      height: 630,
+      format: "jpeg",
+      quality: 70,
+    });
+    ogImageUrl = new URL(src, siteUrl).toString();
+  } catch {
+    // Fallback: just prefix with siteUrl if optimization fails
+    ogImageUrl = new URL(image, siteUrl).toString();
+  }
 } else {
-    // Case 3: External full URL
-    ogImageUrl = image;
+  // Case 3: External full URL
+  ogImageUrl = image;
 }
 ---
 
@@ -54,8 +73,8 @@ if (typeof image === "object" && "src" in image) {
 <meta charset="UTF-8" />
 <meta name="robots" content={noIndex ? "noindex, nofollow" : "index, follow"} />
 <meta
-    name="googlebot"
-    content={noIndex ? "noindex, nofollow" : "index, follow"}
+  name="googlebot"
+  content={noIndex ? "noindex, nofollow" : "index, follow"}
 />
 
 <!-- Canonical URL -->
@@ -67,6 +86,7 @@ if (typeof image === "object" && "src" in image) {
 
 <!-- OpenGraph Meta Tags -->
 <meta property="og:url" content={canonicalURL} />
+<meta property="og:type" content={contentType} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImageUrl} />
@@ -81,17 +101,5 @@ if (typeof image === "object" && "src" in image) {
 <meta name="twitter:creator" content={SITE.twitterHandle} />
 
 <link rel="stylesheet" href="https://cdn.plyr.io/3.8.3/plyr.css" />
-
-<!-- Theme initialization script (inline to prevent flash) -->
-<script is:inline>
-    (function () {
-        const theme = localStorage.getItem("theme") || "dark";
-        if (theme === "dark") {
-            document.documentElement.classList.add("dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-        }
-    })();
-</script>
 
 <ClientRouter />

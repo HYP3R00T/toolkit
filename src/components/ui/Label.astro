@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface LabelProps extends HTMLAttributes<"label"> {
+  for?: string;
+  required?: boolean;
+  class?: string;
+}
+
+const {
+  for: htmlFor,
+  required = false,
+  class: className,
+  ...rest
+} = Astro.props as LabelProps;
+
+const baseClasses = "mb-3 block";
+
+const classes = [baseClasses, className?.trim()].filter(Boolean).join(" ");
+---
+
+<label for={htmlFor} class={classes} {...rest}>
+  <slot />
+  {required && <span class="text-red">*</span>}
+</label>
