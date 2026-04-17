@@ -1,13 +1,55 @@
 ---
+import { SITE } from "@data/config";
+import Badge from "@/components/ui/Badge.astro";
+import Button from "@/components/ui/Button.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
 <BaseLayout>
-    <div class="h-32 w-full bg-linear-to-r from-rose-400 to-red-400"></div>
-    <h1 class="font-bold text-3xl h-dvh">
-        Checkout my projects:
-        <a href="http://hyperoot.dev" target="_blank" class="text-blue-400">
-            hyperoot.dev
-        </a>
-    </h1>
+  <section
+    class="stripe-pattern-dense relative flex items-center min-h-screen px-4 py-24 md:px-12"
+  >
+    <div class="mx-auto w-full max-w-5xl">
+      <div class="space-y-6">
+        <Badge variant="accent">Components</Badge>
+        <h1
+          class="text-foreground-0 font-display text-[clamp(2.5rem,6vw,5rem)] leading-tight font-extrabold"
+        >
+          Design system and UI components
+        </h1>
+        <p class="text-foreground-1 max-w-lg">
+          A lightweight collection of accessible, themeable components built
+          with Astro and Tailwind — ready to drop into your projects.
+        </p>
+
+        <div class="flex items-center gap-4">
+          <a href="/components/">
+            <Button>Browse components</Button>
+          </a>
+
+          <a href={SITE.repo} target="_blank" rel="noopener noreferrer">
+            <Button variant="secondary">View on GitHub</Button>
+          </a>
+        </div>
+      </div>
+
+      <div class="space-y-6 mt-8">
+        <div class="rounded-md border border-border p-6 bg-background-1">
+          <h3 class="text-foreground-0 mb-2 font-semibold">Quick highlights</h3>
+          <ul class="text-foreground-1 list-inside list-disc space-y-2">
+            <li>Dark & light themes with CSS variables</li>
+            <li>Accessible form controls and inputs</li>
+            <li>Re-usable atoms: Button, Badge, Input, Textarea, Carousel</li>
+          </ul>
+        </div>
+
+        <div class="rounded-md border border-border p-6 bg-background-1">
+          <h3 class="text-foreground-0 mb-2 font-semibold">Getting started</h3>
+          <p class="text-foreground-1">
+            Clone the repo, run the dev server, and start composing components.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
