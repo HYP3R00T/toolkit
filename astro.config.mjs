@@ -4,8 +4,6 @@ import { defineConfig } from 'astro/config'
 import AutoImport from 'astro-auto-import'
 import icon from 'astro-icon'
 
-import react from '@astrojs/react';
-
 export default defineConfig({
   site: 'https://rajeshdas.dev',
   prefetch: true,
@@ -32,5 +30,5 @@ export default defineConfig({
     },
   }), AutoImport({
     imports: ['./src/components/core/Video.astro'],
-  }), mdx(), react()],
+  }), mdx()],
 })
