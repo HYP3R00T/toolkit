@@ -2,43 +2,19 @@ import { useState } from 'react'
 import arrowLeftSvg from '@/assets/icons/arrow-left.svg?raw'
 import arrowRightSvg from '@/assets/icons/arrow-right.svg?raw'
 import { Button } from '@/components/ui/Button'
+import {
+  type CarouselImage,
+  convertSvgToCurrentColor,
+  resolveImageAlt,
+  resolveImageSource,
+} from '@/lib/assets'
 import { cn } from '@/lib/cn'
-
-type CarouselImage =
-  | string
-  | {
-      src: string
-      alt?: string
-    }
 
 export interface ImageCarouselProps {
   images: CarouselImage[]
   projectTitle?: string
   imageAlt?: string
   className?: string
-}
-
-function resolveImageSource(image: CarouselImage): string {
-  return typeof image === 'string' ? image : image.src
-}
-
-function resolveImageAlt(
-  image: CarouselImage,
-  projectTitle: string,
-  imageAlt?: string,
-  index?: number,
-): string {
-  if (imageAlt) return imageAlt
-  if (typeof image !== 'string' && image.alt) return image.alt
-  if (projectTitle) return `${projectTitle} - Image ${index ?? 0 + 1}`
-  return `Image ${index ?? 0 + 1}`
-}
-
-function convertSvgToCurrentColor(svg: string): string {
-  return svg
-    .trim()
-    .replace(/stroke="#[0-9a-fA-F]{3,8}"/g, 'stroke="currentColor"')
-    .replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"')
 }
 
 function IconSvg({ svg }: { svg: string }) {
@@ -108,8 +84,10 @@ function ImageCarouselComponent({
             <span
               key={index}
               className={cn(
-                'h-0.5 w-6 bg-foreground-0/30',
-                index === currentIndex && 'bg-foreground-0',
+                'h-0.5 w-6',
+                index === currentIndex
+                  ? 'bg-foreground-0'
+                  : 'bg-foreground-0/30',
               )}
               data-index={index}
             />
