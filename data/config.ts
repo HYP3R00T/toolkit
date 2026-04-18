@@ -17,7 +17,7 @@ export const SITE: SiteConfig = {
 }
 
 export const navItems: NavItem[] = [
-  { href: '/components', label: 'Components' },
+  // { href: '/components', label: 'Components' },
 ]
 
 export const SOCIAL_LINKS = [
