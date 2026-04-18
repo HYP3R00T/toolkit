@@ -59,3 +59,12 @@ export interface FooterSocialLink {
   label: string
   linkTitle: string
 }
+
+export interface ToolCard {
+  id: string
+  title: string
+  description: string
+  href?: string
+  tags: string[]
+  accent?: string
+}

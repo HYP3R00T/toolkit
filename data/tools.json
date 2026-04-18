@@ -1,0 +1,10 @@
+[
+  {
+    "id": "notion-card-generator",
+    "title": "Notion Card Generator",
+    "description": "Generate 16:9 gallery card previews with backgrounds, defaults, and your own uploaded center image.",
+    "href": "/tools/notion-card-generator",
+    "tags": ["Notion", "Generator"],
+    "accent": "from-orange-500 via-rose-500 to-slate-900"
+  }
+]
