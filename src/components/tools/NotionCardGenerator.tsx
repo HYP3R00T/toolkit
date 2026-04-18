@@ -7,6 +7,7 @@ import closeIconRaw from '@/assets/icons/close.svg?raw'
 import lightningIconUrl from '@/assets/icons/lightning.svg?url'
 import userIconUrl from '@/assets/icons/user.svg?url'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Select'
 import { convertSvgToCurrentColor } from '@/lib/assets'
 import { cn } from '@/lib/cn'
 
@@ -240,36 +241,36 @@ export default function NotionCardGenerator() {
         <div className="space-y-3">
           <p className="text-sm font-medium">Background</p>
           <div className="flex items-center gap-2">
-            <select
+            <Select
               value={backgroundId}
               onChange={(event) =>
                 setBackgroundId(event.target.value as BackgroundId)
               }
-              className="border-border bg-background-0 text-foreground-0 h-8 w-full border px-2 text-sm"
+              className="bg-background-0"
             >
               {BACKGROUND_OPTIONS.map((background) => (
                 <option key={background.id} value={background.id}>
                   {background.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm font-medium">Center image</p>
           <div className={centerControlsGridClass}>
-            <select
+            <Select
               value={selectedAssetId}
               onChange={(event) => setSelectedAssetId(event.target.value)}
-              className="border-border bg-background-0 text-foreground-0 h-9 min-w-0 border px-2 text-sm"
+              className="bg-background-0 min-w-0"
             >
               {centerAssets.map((asset) => (
                 <option key={asset.id} value={asset.id}>
                   {asset.label}
                 </option>
               ))}
-            </select>
+            </Select>
 
             <Button
               size="sm"

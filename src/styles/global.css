@@ -188,6 +188,28 @@
     @apply bg-foreground-0;
   }
 
+  /* Select dropdown styling */
+  select option {
+    background-color: var(--background-0);
+    color: var(--foreground-0);
+    padding: 4px 0;
+  }
+
+  select option:checked,
+  select option:checked:hover,
+  select option:checked:focus,
+  select option:checked:active {
+    background-color: var(--accent) !important;
+    color: white;
+  }
+
+  select option:hover,
+  select option:focus,
+  select option:active {
+    background-color: var(--accent) !important;
+    color: white;
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     @apply cursor-pointer;
