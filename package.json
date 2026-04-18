@@ -21,7 +21,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^6.1.7",
-    "astro-auto-import": "^0.4.6",
+    "astro-auto-import": "^0.5.1",
     "astro-icon": "^1.1.5",
     "html-to-image": "^1.11.13",
     "plyr": "^3.8.4",
@@ -29,12 +29,12 @@
     "react-dom": "^19.2.5",
     "rehype-pretty-code": "^0.14.3",
     "sharp": "^0.34.5",
-    "shiki": "^3.23.0",
+    "shiki": "^4.0.2",
     "tailwindcss": "^4.2.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.6",
+    "@biomejs/biome": "2.4.12",
     "globals": "^17.5.0"
   }
 }
