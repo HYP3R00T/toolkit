@@ -24,6 +24,8 @@ export function resolveImageAlt(
 export function convertSvgToCurrentColor(svg: string): string {
   return svg
     .trim()
+    .replace(/\swidth="[^"]*"/g, '')
+    .replace(/\sheight="[^"]*"/g, '')
     .replace(/stroke="#[0-9a-fA-F]{3,8}"/g, 'stroke="currentColor"')
     .replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"')
 }

@@ -1,55 +1,194 @@
 ---
-import { SITE } from "@data/config";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import BaseLayout from "@/layouts/BaseLayout.astro";
+import { SITE } from '@data/config'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+const tools = [
+  {
+    id: 'notion-card-generator',
+    title: 'Notion Card Generator',
+    description:
+      'Generate 16:9 gallery card previews with background, icon, and icon tone controls.',
+    href: '/tools/notion-card-generator',
+    status: 'Live',
+    state: 'live',
+    filters: ['all', 'live', 'generator', 'notion', 'preview'],
+    accent: 'from-orange-500 via-rose-500 to-slate-900',
+  },
+  {
+    id: 'open-graph-preview-builder',
+    title: 'Open Graph Preview Builder',
+    description:
+      'Compose share image previews for blog posts, pages, and social cards.',
+    href: null,
+    status: 'Planned',
+    state: 'planned',
+    filters: ['all', 'planned', 'generator', 'seo'],
+    accent: 'from-emerald-500 via-cyan-500 to-blue-500',
+  },
+  {
+    id: 'palette-extractor',
+    title: 'Palette Extractor',
+    description:
+      'Turn an image into a compact palette for faster visual decisions.',
+    href: null,
+    status: 'Planned',
+    state: 'planned',
+    filters: ['all', 'planned', 'utility', 'media'],
+    accent: 'from-violet-500 via-fuchsia-500 to-pink-500',
+  },
+  {
+    id: 'snippet-composer',
+    title: 'Snippet Composer',
+    description:
+      'Build small code-sharing cards and export them as readable images.',
+    href: null,
+    status: 'Planned',
+    state: 'planned',
+    filters: ['all', 'planned', 'utility', 'preview'],
+    accent: 'from-amber-400 via-orange-500 to-red-600',
+  },
+] as const
+
+const filters = [
+  { id: 'all', label: 'All tools' },
+  { id: 'live', label: 'Live' },
+  { id: 'planned', label: 'Planned' },
+  { id: 'generator', label: 'Generators' },
+  { id: 'utility', label: 'Utilities' },
+  { id: 'seo', label: 'SEO' },
+  { id: 'media', label: 'Media' },
+  { id: 'notion', label: 'Notion' },
+  { id: 'preview', label: 'Preview' },
+] as const
 ---
 
-<BaseLayout>
-  <section
-    class="stripe-pattern-dense relative flex items-center min-h-screen px-4 py-24 md:px-12"
-  >
-    <div class="mx-auto w-full max-w-5xl">
-      <div class="space-y-6">
-        <Badge variant="accent">Components</Badge>
-        <h1
-          class="text-foreground-0 font-display text-[clamp(2.5rem,6vw,5rem)] leading-tight font-extrabold"
-        >
-          Design system and UI components
-        </h1>
-        <p class="text-foreground-1 max-w-lg">
-          A lightweight collection of accessible, themeable components built
-          with Astro and Tailwind — ready to drop into your projects.
-        </p>
+<BaseLayout
+  title={SITE.title}
+  description="Filterable tools and generators, all driven from the front end."
+>
+  <section class="stripe-pattern-dense relative min-h-screen px-4 py-12 md:px-12">
+    <div class="mx-auto w-full max-w-7xl space-y-8">
+      <div class="flex flex-wrap items-center gap-2">
+        <Badge variant="accent">Tools</Badge>
 
-        <div class="flex items-center gap-4">
-          <a href="/components/">
-            <Button>Browse components</Button>
-          </a>
-
-          <a href={SITE.repo} target="_blank" rel="noopener noreferrer">
-            <Button variant="secondary">View on GitHub</Button>
-          </a>
-        </div>
+        {
+          filters.map((filter, index) => (
+            <Button
+              type="button"
+              variant={index === 0 ? 'default' : 'outline'}
+              className="text-xs uppercase tracking-[0.18em]"
+              data-tool-filter={filter.id}
+              aria-pressed={index === 0 ? 'true' : 'false'}
+            >
+              {filter.label}
+            </Button>
+          ))
+        }
       </div>
 
-      <div class="space-y-6 mt-8">
-        <div class="rounded-md border border-border p-6 bg-background-1">
-          <h3 class="text-foreground-0 mb-2 font-semibold">Quick highlights</h3>
-          <ul class="text-foreground-1 list-inside list-disc space-y-2">
-            <li>Dark & light themes with CSS variables</li>
-            <li>Accessible form controls and inputs</li>
-            <li>Re-usable atoms: Button, Badge, Input, Textarea, Carousel</li>
-          </ul>
-        </div>
+      <div id="tool-empty-state" class="border-border hidden border p-6">
+        <p class="text-foreground-1 text-sm leading-relaxed">
+          No tools match that filter yet. Try another category.
+        </p>
+      </div>
 
-        <div class="rounded-md border border-border p-6 bg-background-1">
-          <h3 class="text-foreground-0 mb-2 font-semibold">Getting started</h3>
-          <p class="text-foreground-1">
-            Clone the repo, run the dev server, and start composing components.
-          </p>
-        </div>
+      <div id="tool-grid" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {
+          tools.map((tool) => (
+            <article
+              class="tool-card border-border bg-background-1 group border p-6"
+              data-tool-card
+              data-tags={tool.filters.join(' ')}
+            >
+              <div class={`h-2 bg-linear-to-r ${tool.accent}`} aria-hidden="true" />
+
+              <div class="mt-5 space-y-5">
+                <div class="space-y-2">
+                  <Badge variant={tool.state === 'live' ? 'accent' : 'outline'}>
+                    {tool.status}
+                  </Badge>
+                  <h2 class="text-foreground-0 text-xl font-semibold">
+                    {tool.title}
+                  </h2>
+                </div>
+
+                <p class="text-foreground-1 text-sm leading-relaxed">
+                  {tool.description}
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                  {tool.filters
+                    .filter((filter) => filter !== 'all' && filter !== tool.state)
+                    .slice(0, 3)
+                    .map((filter) => (
+                      <Badge variant="outline">{filter}</Badge>
+                    ))}
+                </div>
+
+                <div>
+                  {tool.href ? (
+                    <Button as="a" href={tool.href}>
+                      Open tool
+                    </Button>
+                  ) : (
+                    <span class="text-foreground-2 text-sm">Coming soon</span>
+                  )}
+                </div>
+              </div>
+            </article>
+          ))
+        }
       </div>
     </div>
   </section>
+
+  <script type="module">
+    const filterButtons = Array.from(
+      document.querySelectorAll('[data-tool-filter]'),
+    )
+    const cards = Array.from(document.querySelectorAll('[data-tool-card]'))
+    const emptyState = document.querySelector('#tool-empty-state')
+
+    function applyFilter(filterId) {
+      let visibleCount = 0
+
+      cards.forEach((card) => {
+        const tags = (card.getAttribute('data-tags') ?? '').split(' ')
+        const isVisible = filterId === 'all' || tags.includes(filterId)
+
+        card.hidden = !isVisible
+
+        if (isVisible) visibleCount += 1
+      })
+
+      if (emptyState) {
+        emptyState.classList.toggle('hidden', visibleCount > 0)
+      }
+
+      filterButtons.forEach((button) => {
+        const isActive = button.getAttribute('data-tool-filter') === filterId
+
+        button.setAttribute('aria-pressed', String(isActive))
+        button.classList.toggle('border-foreground-0', isActive)
+        button.classList.toggle('bg-foreground-0', isActive)
+        button.classList.toggle('text-background-0', isActive)
+        button.classList.toggle('text-foreground-1', !isActive)
+        button.classList.toggle('border-border', !isActive)
+        button.classList.toggle('bg-transparent', !isActive)
+        button.classList.toggle('hover:bg-foreground-0/10', !isActive)
+        button.classList.toggle('hover:text-foreground-0', !isActive)
+      })
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filterId = button.getAttribute('data-tool-filter') ?? 'all'
+        applyFilter(filterId)
+      })
+    })
+
+    applyFilter('all')
+  </script>
 </BaseLayout>
