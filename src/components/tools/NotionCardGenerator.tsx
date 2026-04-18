@@ -1,23 +1,16 @@
 import { toPng } from 'html-to-image'
-import { useRef, useState } from 'react'
-import arrowLeftSvg from '@/assets/icons/arrow-left.svg?raw'
-import arrowRightSvg from '@/assets/icons/arrow-right.svg?raw'
-import arrowUpSvg from '@/assets/icons/arrow-up.svg?raw'
-import checkSvg from '@/assets/icons/check.svg?raw'
-import closeSvg from '@/assets/icons/close.svg?raw'
-import copySvg from '@/assets/icons/copy.svg?raw'
-import githubSvg from '@/assets/icons/github.svg?raw'
-import lightningSvg from '@/assets/icons/lightning.svg?raw'
-import mailSvg from '@/assets/icons/mail.svg?raw'
-import menuSvg from '@/assets/icons/menu.svg?raw'
-import toggleSvg from '@/assets/icons/toggle.svg?raw'
-import userSvg from '@/assets/icons/user.svg?raw'
+import { useEffect, useRef, useState } from 'react'
+
+import arrowUpIconRaw from '@/assets/icons/arrow-up.svg?raw'
+import checkIconUrl from '@/assets/icons/check.svg?url'
+import closeIconRaw from '@/assets/icons/close.svg?raw'
+import lightningIconUrl from '@/assets/icons/lightning.svg?url'
+import userIconUrl from '@/assets/icons/user.svg?url'
 import { Button } from '@/components/ui/Button'
 import { convertSvgToCurrentColor } from '@/lib/assets'
 import { cn } from '@/lib/cn'
 
 type BackgroundId = 'sunset' | 'blue' | 'dream'
-type ToneId = 'foreground' | 'background'
 
 type BackgroundOption = {
   id: BackgroundId
@@ -25,10 +18,10 @@ type BackgroundOption = {
   gradient: string
 }
 
-type IconOption = {
+type CenterAsset = {
   id: string
   label: string
-  svg: string
+  src: string
 }
 
 const BACKGROUND_OPTIONS: BackgroundOption[] = [
@@ -49,38 +42,38 @@ const BACKGROUND_OPTIONS: BackgroundOption[] = [
   },
 ]
 
-const ICON_OPTIONS: IconOption[] = [
-  { id: 'lightning', label: 'Lightning', svg: lightningSvg },
-  { id: 'check', label: 'Check', svg: checkSvg },
-  { id: 'arrow-up', label: 'Arrow up', svg: arrowUpSvg },
-  { id: 'user', label: 'User', svg: userSvg },
-  { id: 'mail', label: 'Mail', svg: mailSvg },
-  { id: 'github', label: 'GitHub', svg: githubSvg },
-  { id: 'toggle', label: 'Toggle', svg: toggleSvg },
-  { id: 'close', label: 'Close', svg: closeSvg },
-  { id: 'menu', label: 'Menu', svg: menuSvg },
-  { id: 'copy', label: 'Copy', svg: copySvg },
-  { id: 'arrow-left', label: 'Arrow left', svg: arrowLeftSvg },
-  { id: 'arrow-right', label: 'Arrow right', svg: arrowRightSvg },
+const DEFAULT_CENTER_ASSETS: CenterAsset[] = [
+  {
+    id: 'default-lightning',
+    label: 'Lightning',
+    src: lightningIconUrl,
+  },
+  {
+    id: 'default-check',
+    label: 'Check',
+    src: checkIconUrl,
+  },
+  {
+    id: 'default-user',
+    label: 'User',
+    src: userIconUrl,
+  },
 ]
 
-function Glyph({
+function InlineSvgIcon({
   svg,
   className,
-  style,
 }: {
   svg: string
   className?: string
-  style?: React.CSSProperties
 }) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        'inline-flex shrink-0 items-center justify-center [&>svg]:block [&>svg]:size-full',
+        'inline-flex items-center justify-center [&>svg]:block [&>svg]:size-full',
         className,
       )}
-      style={style}
       dangerouslySetInnerHTML={{ __html: convertSvgToCurrentColor(svg) }}
     />
   )
@@ -88,13 +81,13 @@ function Glyph({
 
 function CardPreview({
   background,
-  icon,
-  tone,
+  centerImageSrc,
+  centerImageAlt,
   className,
 }: {
   background: BackgroundOption
-  icon: IconOption
-  tone: ToneId
+  centerImageSrc: string
+  centerImageAlt: string
   className?: string
 }) {
   return (
@@ -103,12 +96,11 @@ function CardPreview({
       style={{ backgroundImage: background.gradient }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
-        <Glyph
-          svg={icon.svg}
-          className={cn(
-            tone === 'foreground' ? 'text-foreground-0' : 'text-background-0',
-          )}
-          style={{ width: '64px', height: '64px' }}
+        <img
+          src={centerImageSrc}
+          alt={centerImageAlt}
+          className="h-[14%] w-[14%] min-h-8 min-w-8 object-contain"
+          draggable={false}
         />
       </div>
     </div>
@@ -117,16 +109,79 @@ function CardPreview({
 
 export default function NotionCardGenerator() {
   const [backgroundId, setBackgroundId] = useState<BackgroundId>('sunset')
-  const [iconId, setIconId] = useState('lightning')
-  const [tone, setTone] = useState<ToneId>('foreground')
+  const [selectedAssetId, setSelectedAssetId] = useState('default-lightning')
+  const [uploadedAssetSrc, setUploadedAssetSrc] = useState<string | null>(null)
+  const [uploadedObjectUrl, setUploadedObjectUrl] = useState<string | null>(
+    null,
+  )
   const [isExporting, setIsExporting] = useState(false)
+
   const exportRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const selectedBackground =
     BACKGROUND_OPTIONS.find((option) => option.id === backgroundId) ??
     BACKGROUND_OPTIONS[0]
-  const selectedIcon =
-    ICON_OPTIONS.find((option) => option.id === iconId) ?? ICON_OPTIONS[0]
+
+  const centerAssets = uploadedAssetSrc
+    ? [
+        ...DEFAULT_CENTER_ASSETS,
+        {
+          id: 'uploaded-image',
+          label: 'Uploaded',
+          src: uploadedAssetSrc,
+        },
+      ]
+    : DEFAULT_CENTER_ASSETS
+
+  const selectedCenterAsset =
+    centerAssets.find((asset) => asset.id === selectedAssetId) ??
+    centerAssets[0]
+
+  const centerControlsGridClass = uploadedAssetSrc
+    ? 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center'
+    : 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center'
+
+  useEffect(() => {
+    return () => {
+      if (uploadedObjectUrl) URL.revokeObjectURL(uploadedObjectUrl)
+    }
+  }, [uploadedObjectUrl])
+
+  const applyUploadedFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return
+
+    const nextObjectUrl = URL.createObjectURL(file)
+
+    if (uploadedObjectUrl) {
+      URL.revokeObjectURL(uploadedObjectUrl)
+    }
+
+    setUploadedObjectUrl(nextObjectUrl)
+    setUploadedAssetSrc(nextObjectUrl)
+    setSelectedAssetId('uploaded-image')
+  }
+
+  const clearUploadedFile = () => {
+    if (uploadedObjectUrl) URL.revokeObjectURL(uploadedObjectUrl)
+
+    setUploadedObjectUrl(null)
+    setUploadedAssetSrc(null)
+    setSelectedAssetId(DEFAULT_CENTER_ASSETS[0].id)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleFileInputChange: React.ChangeEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    applyUploadedFile(file)
+  }
 
   const handleDownload = async () => {
     if (!exportRef.current || isExporting) return
@@ -140,7 +195,7 @@ export default function NotionCardGenerator() {
       })
 
       const link = document.createElement('a')
-      link.download = `notion-card-${selectedBackground.id}-${selectedIcon.id}.png`
+      link.download = `notion-card-${selectedBackground.id}-${selectedAssetId}.png`
       link.href = pngDataUrl
       link.click()
       link.remove()
@@ -156,8 +211,8 @@ export default function NotionCardGenerator() {
       <div className="space-y-6">
         <CardPreview
           background={selectedBackground}
-          icon={selectedIcon}
-          tone={tone}
+          centerImageSrc={selectedCenterAsset.src}
+          centerImageAlt={selectedCenterAsset.label}
           className="aspect-video w-full"
         />
 
@@ -168,113 +223,98 @@ export default function NotionCardGenerator() {
       </div>
 
       <aside className="border-border bg-background-1 space-y-6 border p-6 md:p-8">
-        <div className="flex items-center justify-between gap-4">
-          <div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-4">
             <h2 className="text-foreground-0 text-xl font-semibold">Editor</h2>
-            <p className="text-foreground-2 mt-1 text-sm">
-              Fixed export size: 1600 × 900.
-            </p>
+
+            <Button onClick={handleDownload} disabled={isExporting}>
+              {isExporting ? 'Exporting...' : 'Download PNG'}
+            </Button>
           </div>
 
-          <Button onClick={handleDownload} disabled={isExporting}>
-            {isExporting ? 'Exporting…' : 'Download PNG'}
-          </Button>
+          <p className="text-foreground-2 text-xs uppercase tracking-[0.08em]">
+            Export: 960 x 540 PNG
+          </p>
         </div>
 
         <div className="space-y-3">
-          <p className="mb-2 text-sm font-medium">Background</p>
-          <div className="grid gap-2">
-            {BACKGROUND_OPTIONS.map((background) => {
-              const isActive = background.id === backgroundId
-
-              return (
-                <Button
-                  key={background.id}
-                  variant={isActive ? 'default' : 'outline'}
-                  onClick={() => setBackgroundId(background.id)}
-                  className="justify-start gap-3 text-left"
-                  aria-pressed={isActive}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="border-border h-8 w-8 shrink-0 border"
-                    style={{ backgroundImage: background.gradient }}
-                  />
-                  <span>{background.label}</span>
-                </Button>
-              )
-            })}
+          <p className="text-sm font-medium">Background</p>
+          <div className="flex items-center gap-2">
+            <select
+              value={backgroundId}
+              onChange={(event) =>
+                setBackgroundId(event.target.value as BackgroundId)
+              }
+              className="border-border bg-background-0 text-foreground-0 h-8 w-full border px-2 text-sm"
+            >
+              {BACKGROUND_OPTIONS.map((background) => (
+                <option key={background.id} value={background.id}>
+                  {background.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
         <div className="space-y-3">
-          <p className="mb-2 text-sm font-medium">Icon</p>
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-            {ICON_OPTIONS.map((icon) => {
-              const isActive = icon.id === iconId
+          <p className="text-sm font-medium">Center image</p>
+          <div className={centerControlsGridClass}>
+            <select
+              value={selectedAssetId}
+              onChange={(event) => setSelectedAssetId(event.target.value)}
+              className="border-border bg-background-0 text-foreground-0 h-9 min-w-0 border px-2 text-sm"
+            >
+              {centerAssets.map((asset) => (
+                <option key={asset.id} value={asset.id}>
+                  {asset.label}
+                </option>
+              ))}
+            </select>
 
-              return (
-                <div key={icon.id} className="space-y-2 text-center">
-                  <Button
-                    variant={isActive ? 'default' : 'outline'}
-                    onClick={() => setIconId(icon.id)}
-                    size="icon-sm"
-                    className="mx-auto"
-                    aria-pressed={isActive}
-                    title={icon.label}
-                  >
-                    <Glyph
-                      svg={icon.svg}
-                      style={{ width: '14px', height: '14px' }}
-                    />
-                  </Button>
-                  <span className="text-foreground-2 block text-xs uppercase tracking-[0.18em]">
-                    {icon.label}
-                  </span>
-                </div>
-              )
-            })}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-foreground-0 h-9 gap-1.5 px-3 hover:text-foreground-0"
+              title="Upload image"
+              aria-label="Upload your own image"
+            >
+              <InlineSvgIcon
+                svg={arrowUpIconRaw}
+                className="text-foreground-0 h-3 w-3"
+              />
+              <span>Upload</span>
+            </Button>
+
+            {uploadedAssetSrc && (
+              <Button
+                size="sm"
+                onClick={clearUploadedFile}
+                variant="outline"
+                className="text-foreground-0 h-9 gap-1.5 px-3 hover:text-foreground-0"
+                title="Remove uploaded image"
+                aria-label="Remove uploaded image"
+              >
+                <InlineSvgIcon
+                  svg={closeIconRaw}
+                  className="text-foreground-0 h-3 w-3"
+                />
+                <span>Remove</span>
+              </Button>
+            )}
           </div>
-        </div>
 
-        <div className="space-y-3">
-          <p className="mb-2 text-sm font-medium">Icon tone</p>
-          <div className="grid grid-cols-2 gap-2">
-            {(
-              [
-                { id: 'foreground' as const, label: 'Foreground' },
-                { id: 'background' as const, label: 'Background' },
-              ] as const
-            ).map((option) => {
-              const isActive = option.id === tone
+          <p className="text-foreground-2 text-xs">
+            Choose a default or upload your own PNG, JPG, or SVG.
+          </p>
 
-              return (
-                <Button
-                  key={option.id}
-                  variant={isActive ? 'default' : 'outline'}
-                  onClick={() => setTone(option.id)}
-                  className="justify-start gap-3 text-left"
-                  aria-pressed={isActive}
-                >
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'border-border h-4 w-4 shrink-0 border',
-                      option.id === 'foreground'
-                        ? 'bg-foreground-0'
-                        : 'bg-background-0',
-                    )}
-                  />
-                  <span>{option.label}</span>
-                </Button>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="border-border border p-4 text-sm leading-relaxed">
-          The preview stays flat: no overlay, no translucent shell, no rounded
-          corners.
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileInputChange}
+          />
         </div>
       </aside>
 
@@ -285,9 +325,9 @@ export default function NotionCardGenerator() {
         <div ref={exportRef}>
           <CardPreview
             background={selectedBackground}
-            icon={selectedIcon}
-            tone={tone}
-            className="h-225 w-400"
+            centerImageSrc={selectedCenterAsset.src}
+            centerImageAlt={selectedCenterAsset.label}
+            className="h-135 w-240"
           />
         </div>
       </div>
