@@ -1,0 +1,57 @@
+---
+title: "Input"
+description: "Text input component with labels and states."
+category: "ui"
+---
+
+import InputComponent from "@/components/ui/Input";
+
+## Basic
+
+<InputComponent placeholder="Enter text" />
+
+## Types
+
+### Email
+
+<InputComponent type="email" placeholder="name@example.com" />
+
+### Password
+
+<InputComponent type="password" placeholder="Enter password" />
+
+### Number
+
+<InputComponent type="number" placeholder="0" />
+
+### Search
+
+<InputComponent type="search" placeholder="Search..." />
+
+### Date & Time
+
+<InputComponent type="date" />
+
+<InputComponent type="time" />
+
+## States
+
+### Disabled
+
+<InputComponent placeholder="Disabled" disabled={true} />
+
+### With value
+
+<InputComponent value="Pre-filled value" />
+
+### Required
+
+<InputComponent required={true} placeholder="Required field" />
+
+### With name and id
+
+<InputComponent name="username" id="username" placeholder="Username" />
+
+## Notes
+
+Use these examples as a reference for different input types, states, and props.

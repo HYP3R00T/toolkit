@@ -1,0 +1,31 @@
+---
+title: "Label"
+description: "Label component for form fields."
+category: "ui"
+---
+
+import LabelComponent from "@/components/ui/Label";
+import InputComponent from "@/components/ui/Input";
+
+## Basic
+
+<LabelComponent for="first-name">First name</LabelComponent>
+<InputComponent id="first-name" name="first-name" placeholder="First name" />
+
+## Required
+
+<LabelComponent for="email" required={true}>Email address</LabelComponent>
+<InputComponent id="email" name="email" type="email" placeholder="name@example.com" />
+
+## As a block with an input
+
+<LabelComponent for="bio" class="mb-2">Bio</LabelComponent>
+<InputComponent id="bio" placeholder="Tell us about yourself" />
+
+## Inline label content
+
+<LabelComponent for="agree">I agree to the <a href="#">terms</a></LabelComponent>
+
+## Notes
+
+The `for` prop ties the label to an input's `id`. Use `required` to display the asterisk.

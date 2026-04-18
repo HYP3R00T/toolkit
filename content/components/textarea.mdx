@@ -1,0 +1,43 @@
+---
+title: "Textarea"
+description: "Multi-line text input component."
+category: "ui"
+---
+
+import TextareaComponent from "@/components/ui/Textarea";
+import LabelComponent from "@/components/ui/Label";
+
+## Basic
+
+<TextareaComponent placeholder="Write your message" />
+
+## Fixed rows
+
+<TextareaComponent rows={3} placeholder="Short message" />
+
+<TextareaComponent rows={8} placeholder="Longer message" />
+
+## Disabled
+
+<TextareaComponent placeholder="Disabled" disabled={true} />
+
+## With value
+
+<TextareaComponent value="This is a pre-filled message." />
+
+## Required
+
+<TextareaComponent required={true} placeholder="Required field" />
+
+## Name and id
+
+<TextareaComponent id="comments" name="comments" placeholder="Your comments" />
+
+## With label
+
+<LabelComponent for="bio" class="mb-2">Bio</LabelComponent>
+<TextareaComponent id="bio" rows={6} placeholder="Tell us about yourself" />
+
+## Notes
+
+Use `rows` to control the initial height, `value` for pre-filled content, and `disabled`/`required` for common field states.

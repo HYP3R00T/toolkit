@@ -1,0 +1,37 @@
+---
+title: Button
+description: "Core button variants and sizes."
+category: "ui"
+order: 1
+---
+
+import ButtonComponent from "@/components/ui/Button";
+import { Icon } from "astro-icon/components";
+
+## Examples
+
+### Variants
+
+<ButtonComponent variant="default">Default</ButtonComponent>
+<ButtonComponent variant="secondary">Secondary</ButtonComponent>
+<ButtonComponent variant="outline">Outline</ButtonComponent>
+<ButtonComponent variant="ghost">Ghost</ButtonComponent>
+<ButtonComponent variant="link">Link</ButtonComponent>
+
+### Sizes
+
+<ButtonComponent size="sm">Small</ButtonComponent>
+<ButtonComponent size="default">Default</ButtonComponent>
+<ButtonComponent size="lg">Large</ButtonComponent>
+
+### Icon Sizes
+
+<ButtonComponent variant="secondary" size="icon-sm">
+  <Icon name="check" />
+</ButtonComponent>
+<ButtonComponent variant="secondary" size="icon">
+  <Icon name="check" />
+</ButtonComponent>
+<ButtonComponent variant="secondary" size="icon-lg">
+  <Icon name="check" />
+</ButtonComponent>
