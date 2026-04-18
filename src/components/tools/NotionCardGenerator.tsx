@@ -11,7 +11,7 @@ import { Select } from '@/components/ui/Select'
 import { convertSvgToCurrentColor } from '@/lib/assets'
 import { cn } from '@/lib/cn'
 
-type BackgroundId = 'sunset' | 'blue' | 'dream'
+type BackgroundId = 'sunset' | 'blue' | 'dream' | 'cyberpunk'
 
 type BackgroundOption = {
   id: BackgroundId
@@ -40,6 +40,11 @@ const BACKGROUND_OPTIONS: BackgroundOption[] = [
     id: 'dream',
     label: 'Frozen Dreams',
     gradient: 'linear-gradient(-45deg, rgb(253, 203, 241), rgb(230, 222, 233))',
+  },
+  {
+    id: 'cyberpunk',
+    label: 'Cyberpunk',
+    gradient: 'linear-gradient(-45deg, rgb(143, 102, 255), rgb(102, 227, 255))',
   },
 ]
 
@@ -109,7 +114,7 @@ function CardPreview({
 }
 
 export default function NotionCardGenerator() {
-  const [backgroundId, setBackgroundId] = useState<BackgroundId>('sunset')
+  const [backgroundId, setBackgroundId] = useState<BackgroundId>('cyberpunk')
   const [selectedAssetId, setSelectedAssetId] = useState('default-lightning')
   const [uploadedAssetSrc, setUploadedAssetSrc] = useState<string | null>(null)
   const [uploadedObjectUrl, setUploadedObjectUrl] = useState<string | null>(
