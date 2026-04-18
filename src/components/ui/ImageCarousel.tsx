@@ -1,5 +1,7 @@
 import { useState } from 'react'
-
+import arrowLeftSvg from '@/assets/icons/arrow-left.svg?raw'
+import arrowRightSvg from '@/assets/icons/arrow-right.svg?raw'
+import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/cn'
 
 type CarouselImage =
@@ -30,6 +32,23 @@ function resolveImageAlt(
   if (typeof image !== 'string' && image.alt) return image.alt
   if (projectTitle) return `${projectTitle} - Image ${index ?? 0 + 1}`
   return `Image ${index ?? 0 + 1}`
+}
+
+function convertSvgToCurrentColor(svg: string): string {
+  return svg
+    .trim()
+    .replace(/stroke="#[0-9a-fA-F]{3,8}"/g, 'stroke="currentColor"')
+    .replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"')
+}
+
+function IconSvg({ svg }: { svg: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="text-foreground-0 block [&>svg]:block [&>svg]:size-6 [&>svg]:shrink-0"
+      dangerouslySetInnerHTML={{ __html: convertSvgToCurrentColor(svg) }}
+    />
+  )
 }
 
 function ImageCarouselComponent({
@@ -100,23 +119,25 @@ function ImageCarouselComponent({
 
       {showControls && (
         <div className="bg-background-0/0 pointer-events-auto absolute inset-0 flex items-center justify-between p-4 opacity-100 transition-opacity duration-300 md:pointer-events-none md:opacity-0 md:group-hover:opacity-100">
-          <button
-            type="button"
+          <Button
             aria-label="Previous image"
             onClick={goToPrev}
+            size="icon"
+            variant="default"
             className="carousel-prev bg-background-0/10! backdrop-blur-2xl pointer-events-auto self-center"
           >
-            <span className="text-foreground-0 text-xl">←</span>
-          </button>
+            <IconSvg svg={arrowLeftSvg} />
+          </Button>
 
-          <button
-            type="button"
+          <Button
             aria-label="Next image"
             onClick={goToNext}
+            size="icon"
+            variant="default"
             className="carousel-next bg-background-0/10! backdrop-blur-2xl pointer-events-auto self-center"
           >
-            <span className="text-foreground-0 text-xl">→</span>
-          </button>
+            <IconSvg svg={arrowRightSvg} />
+          </Button>
         </div>
       )}
 
