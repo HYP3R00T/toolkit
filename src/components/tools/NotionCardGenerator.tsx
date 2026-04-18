@@ -232,10 +232,6 @@ export default function NotionCardGenerator() {
               {isExporting ? 'Exporting...' : 'Download PNG'}
             </Button>
           </div>
-
-          <p className="text-foreground-2 text-xs uppercase tracking-[0.08em]">
-            Export: 960 x 540 PNG
-          </p>
         </div>
 
         <div className="space-y-3">
@@ -274,16 +270,13 @@ export default function NotionCardGenerator() {
 
             <Button
               size="sm"
-              variant="outline"
+              variant="default"
               onClick={() => fileInputRef.current?.click()}
-              className="text-foreground-0 h-9 gap-1.5 px-3 hover:text-foreground-0"
+              className="h-9 gap-1.5 px-3"
               title="Upload image"
               aria-label="Upload your own image"
             >
-              <InlineSvgIcon
-                svg={arrowUpIconRaw}
-                className="text-foreground-0 h-3 w-3"
-              />
+              <InlineSvgIcon svg={arrowUpIconRaw} className="size-4" />
               <span>Upload</span>
             </Button>
 
@@ -291,15 +284,12 @@ export default function NotionCardGenerator() {
               <Button
                 size="sm"
                 onClick={clearUploadedFile}
-                variant="outline"
-                className="text-foreground-0 h-9 gap-1.5 px-3 hover:text-foreground-0"
+                variant="default"
+                className="h-9 gap-1.5 px-3"
                 title="Remove uploaded image"
                 aria-label="Remove uploaded image"
               >
-                <InlineSvgIcon
-                  svg={closeIconRaw}
-                  className="text-foreground-0 h-3 w-3"
-                />
+                <InlineSvgIcon svg={closeIconRaw} className="size-4" />
                 <span>Remove</span>
               </Button>
             )}
