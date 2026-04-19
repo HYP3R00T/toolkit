@@ -154,17 +154,25 @@ export default function NotionCardGenerator() {
     }
   }, [uploadedObjectUrl])
 
-  const applyUploadedFile = (file: File) => {
+  const applyUploadedFile = async (file: File) => {
     if (!file.type.startsWith('image/')) return
-
-    const nextObjectUrl = URL.createObjectURL(file)
 
     if (uploadedObjectUrl) {
       URL.revokeObjectURL(uploadedObjectUrl)
     }
 
-    setUploadedObjectUrl(nextObjectUrl)
-    setUploadedAssetSrc(nextObjectUrl)
+    if (file.type === 'image/svg+xml') {
+      const svgSource = await file.text()
+      setUploadedObjectUrl(null)
+      setUploadedAssetSrc(
+        `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgSource)}`,
+      )
+    } else {
+      const nextObjectUrl = URL.createObjectURL(file)
+      setUploadedObjectUrl(nextObjectUrl)
+      setUploadedAssetSrc(nextObjectUrl)
+    }
+
     setSelectedAssetId('uploaded-image')
   }
 
@@ -186,7 +194,7 @@ export default function NotionCardGenerator() {
     const file = event.target.files?.[0]
     if (!file) return
 
-    applyUploadedFile(file)
+    void applyUploadedFile(file)
   }
 
   const handleDownload = async () => {
