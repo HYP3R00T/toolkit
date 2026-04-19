@@ -57,9 +57,6 @@
   --astro-code-token-string-expression: var(--green);
   --astro-code-token-punctuation: var(--red);
   --astro-code-token-link: var(--green);
-
-  /* Plyr theme */
-  --plyr-color-main: var(--accent);
 }
 
 .light {
