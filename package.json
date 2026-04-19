@@ -24,7 +24,6 @@
     "astro-auto-import": "^0.4.6",
     "astro-icon": "^1.1.5",
     "html-to-image": "^1.11.13",
-    "plyr": "^3.8.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "rehype-pretty-code": "^0.14.3",
