@@ -8,6 +8,7 @@ import lightningIconUrl from '@/assets/icons/lightning.svg?url'
 import userIconUrl from '@/assets/icons/user.svg?url'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
+import { Slider } from '@/components/ui/Slider'
 import { convertSvgToCurrentColor } from '@/lib/assets'
 import { cn } from '@/lib/cn'
 
@@ -89,11 +90,13 @@ function CardPreview({
   background,
   centerImageSrc,
   centerImageAlt,
+  centerImageSize,
   className,
 }: {
   background: BackgroundOption
   centerImageSrc: string
   centerImageAlt: string
+  centerImageSize: number
   className?: string
 }) {
   return (
@@ -105,7 +108,11 @@ function CardPreview({
         <img
           src={centerImageSrc}
           alt={centerImageAlt}
-          className="h-[14%] w-[14%] min-h-8 min-w-8 object-contain"
+          className="object-contain"
+          style={{
+            width: `${centerImageSize}px`,
+            height: `${centerImageSize}px`,
+          }}
           draggable={false}
         />
       </div>
@@ -116,6 +123,7 @@ function CardPreview({
 export default function NotionCardGenerator() {
   const [backgroundId, setBackgroundId] = useState<BackgroundId>('cyberpunk')
   const [selectedAssetId, setSelectedAssetId] = useState('default-lightning')
+  const [iconSize, setIconSize] = useState(180)
   const [uploadedAssetSrc, setUploadedAssetSrc] = useState<string | null>(null)
   const [uploadedObjectUrl, setUploadedObjectUrl] = useState<string | null>(
     null,
@@ -227,6 +235,7 @@ export default function NotionCardGenerator() {
           background={selectedBackground}
           centerImageSrc={selectedCenterAsset.src}
           centerImageAlt={selectedCenterAsset.label}
+          centerImageSize={iconSize}
           className="aspect-video w-full"
         />
 
@@ -308,6 +317,23 @@ export default function NotionCardGenerator() {
             )}
           </div>
 
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm font-medium">Icon size</p>
+              <span className="text-foreground-2 text-xs tabular-nums">
+                {iconSize}px
+              </span>
+            </div>
+            <Slider
+              min="24"
+              max="256"
+              step="1"
+              value={iconSize}
+              onChange={(event) => setIconSize(Number(event.target.value))}
+              aria-label="Icon size"
+            />
+          </div>
+
           <p className="text-foreground-2 text-xs">
             Choose a default or upload your own PNG, JPG, or SVG.
           </p>
@@ -331,6 +357,7 @@ export default function NotionCardGenerator() {
             background={selectedBackground}
             centerImageSrc={selectedCenterAsset.src}
             centerImageAlt={selectedCenterAsset.label}
+            centerImageSize={iconSize}
             className="h-135 w-240"
           />
         </div>
