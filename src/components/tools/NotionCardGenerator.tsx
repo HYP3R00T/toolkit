@@ -1,4 +1,4 @@
-import { toPng } from 'html-to-image'
+import { toPng, toSvg } from 'html-to-image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import checkIconUrl from '@/assets/icons/check.svg?url'
@@ -33,6 +33,10 @@ function extractImageFilesFromItems(items?: DataTransferItemList | null) {
     const file = item.getAsFile()
     return file ? [file] : []
   })
+}
+
+function isSvgSource(source: string | null) {
+  return source?.startsWith('data:image/svg+xml') ?? false
 }
 
 const BACKGROUND_OPTIONS: BackgroundOption[] = [
@@ -160,6 +164,9 @@ export default function NotionCardGenerator() {
     centerAssets.find((asset) => asset.id === selectedAssetId) ??
     centerAssets[0]
 
+  const useSvgExport = isSvgSource(selectedCenterAsset.src)
+  const exportFormatLabel = useSvgExport ? 'SVG' : 'PNG'
+
   const centerControlsGridClass = uploadedAssetSrc
     ? 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center'
     : 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center'
@@ -235,14 +242,16 @@ export default function NotionCardGenerator() {
     setIsExporting(true)
 
     try {
-      const pngDataUrl = await toPng(exportRef.current, {
-        cacheBust: true,
-        pixelRatio: 1,
-      })
+      const exportDataUrl = useSvgExport
+        ? await toSvg(exportRef.current, { cacheBust: true })
+        : await toPng(exportRef.current, {
+            cacheBust: true,
+            pixelRatio: 1,
+          })
 
       const link = document.createElement('a')
-      link.download = `notion-card-${selectedBackground.id}-${selectedAssetId}.png`
-      link.href = pngDataUrl
+      link.download = `notion-card-${selectedBackground.id}-${selectedAssetId}.${useSvgExport ? 'svg' : 'png'}`
+      link.href = exportDataUrl
       link.click()
       link.remove()
     } catch (error) {
@@ -275,7 +284,7 @@ export default function NotionCardGenerator() {
             <h2 className="text-foreground-0 text-xl font-semibold">Editor</h2>
 
             <Button onClick={handleDownload} disabled={isExporting}>
-              {isExporting ? 'Exporting...' : 'Download PNG'}
+              {isExporting ? 'Exporting...' : `Download ${exportFormatLabel}`}
             </Button>
           </div>
         </div>
@@ -302,6 +311,9 @@ export default function NotionCardGenerator() {
         <div className="space-y-3">
           <p className="text-sm font-medium">Center image</p>
           <ImageDropZone onFiles={handleUploadedFiles} title="Add image" />
+          <p className="text-foreground-2 text-xs">
+            SVG uploads export as SVG. PNG and JPG uploads fall back to PNG.
+          </p>
           <div className={centerControlsGridClass}>
             <Select
               value={selectedAssetId}
