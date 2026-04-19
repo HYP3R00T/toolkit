@@ -138,9 +138,6 @@ export default function NotionCardGenerator() {
   const [selectedAssetId, setSelectedAssetId] = useState('default-lightning')
   const [iconSize, setIconSize] = useState(180)
   const [uploadedAssetSrc, setUploadedAssetSrc] = useState<string | null>(null)
-  const [uploadedObjectUrl, setUploadedObjectUrl] = useState<string | null>(
-    null,
-  )
   const [isExporting, setIsExporting] = useState(false)
 
   const exportRef = useRef<HTMLDivElement>(null)
@@ -171,36 +168,33 @@ export default function NotionCardGenerator() {
     ? 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center'
     : 'grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center'
 
-  useEffect(() => {
-    return () => {
-      if (uploadedObjectUrl) URL.revokeObjectURL(uploadedObjectUrl)
-    }
-  }, [uploadedObjectUrl])
+  const applyUploadedFile = useCallback(async (file: File) => {
+    if (!file.type.startsWith('image/')) return
 
-  const applyUploadedFile = useCallback(
-    async (file: File) => {
-      if (!file.type.startsWith('image/')) return
+    const nextAssetSrc = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
 
-      if (uploadedObjectUrl) {
-        URL.revokeObjectURL(uploadedObjectUrl)
+      reader.onload = () => {
+        const result = reader.result
+        if (typeof result !== 'string') {
+          reject(new Error('Failed to read uploaded image'))
+          return
+        }
+
+        resolve(result)
       }
 
-      if (file.type === 'image/svg+xml') {
-        const svgSource = await file.text()
-        setUploadedObjectUrl(null)
-        setUploadedAssetSrc(
-          `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgSource)}`,
-        )
-      } else {
-        const nextObjectUrl = URL.createObjectURL(file)
-        setUploadedObjectUrl(nextObjectUrl)
-        setUploadedAssetSrc(nextObjectUrl)
+      reader.onerror = () => {
+        reject(reader.error ?? new Error('Failed to read uploaded image'))
       }
 
-      setSelectedAssetId('uploaded-image')
-    },
-    [uploadedObjectUrl],
-  )
+      reader.readAsDataURL(file)
+    })
+
+    setUploadedAssetSrc(nextAssetSrc)
+
+    setSelectedAssetId('uploaded-image')
+  }, [])
 
   const handleUploadedFiles = useCallback(
     (files: File[]) => {
@@ -213,9 +207,6 @@ export default function NotionCardGenerator() {
   )
 
   const clearUploadedFile = () => {
-    if (uploadedObjectUrl) URL.revokeObjectURL(uploadedObjectUrl)
-
-    setUploadedObjectUrl(null)
     setUploadedAssetSrc(null)
     setSelectedAssetId(DEFAULT_CENTER_ASSETS[0].id)
   }
