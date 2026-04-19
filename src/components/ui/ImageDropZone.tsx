@@ -4,29 +4,29 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from 'react'
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 
 import { cn } from '@/lib/cn'
 
 export interface ImageDropZoneProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   onFiles: (files: File[]) => void
+  accept?: string
+  multiple?: boolean
   title?: string
-  description?: string
-  helperText?: string
   class?: string
   className?: string
   children?: ReactNode
 }
 
 const baseClasses =
-  'relative overflow-hidden border border-dashed border-border bg-background-0 px-4 py-5 text-left transition-all duration-200 focus:outline-none'
+  'relative overflow-hidden border border-dashed border-border bg-background-0 px-5 py-6 text-center transition-all duration-200 focus:outline-none'
 
 function ImageDropZoneComponent({
   onFiles,
-  title = 'Drop or paste image',
-  description = 'Drag an image here or paste one from the clipboard.',
-  helperText = 'PNG, JPG, GIF, or SVG',
+  accept = 'image/*',
+  multiple = false,
+  title = 'Add image',
   class: classNameFromAstro,
   className,
   children,
@@ -34,6 +34,8 @@ function ImageDropZoneComponent({
 }: ImageDropZoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const dragCounter = useRef(0)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const helpId = useId()
 
   const extractImageFiles = (items?: DataTransferItemList | null) => {
     return Array.from(items ?? []).flatMap((item) => {
@@ -89,13 +91,36 @@ function ImageDropZoneComponent({
     onFiles(files)
   }
 
+  const handleFileInputChange: React.ChangeEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    const files = Array.from(event.target.files ?? [])
+    if (files.length === 0) return
+
+    onFiles(files)
+    event.currentTarget.value = ''
+  }
+
+  const triggerFilePicker = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+
+    event.preventDefault()
+    triggerFilePicker()
+  }
+
   return (
     <div
       tabIndex={0}
       role="region"
       aria-label={title}
+      aria-describedby={helpId}
       className={cn(
         baseClasses,
+        'cursor-pointer hover:border-accent hover:bg-accent/5',
         isDragging
           ? 'border-accent bg-accent/15 text-foreground-0 ring-2 ring-accent ring-offset-2 ring-offset-background-0 shadow-[0_0_0_1px_var(--accent),0_0_0_9999px_rgba(0,0,0,0.18)]'
           : 'text-foreground-1',
@@ -107,24 +132,30 @@ function ImageDropZoneComponent({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onPaste={handlePaste}
+      onClick={triggerFilePicker}
+      onKeyDown={handleKeyDown}
       {...rest}
     >
       <div
         className={cn(
-          'transition-opacity duration-200',
-          isDragging ? 'opacity-30' : 'opacity-100',
+          'mx-auto flex max-w-sm flex-col items-center gap-3 transition-opacity duration-200',
+          isDragging ? 'opacity-25' : 'opacity-100',
         )}
       >
         {children ?? (
-          <div className="space-y-1">
+          <>
+            <div className="flex size-10 items-center justify-center border border-border bg-background-1 text-foreground-2">
+              <span className="text-lg leading-none">+</span>
+            </div>
+
             <p className="text-sm font-medium text-foreground-0">{title}</p>
-            <p className="text-sm leading-relaxed text-foreground-1">
-              {description}
-            </p>
-            <p className="text-xs text-foreground-2">{helperText}</p>
-          </div>
+          </>
         )}
       </div>
+
+      <p id={helpId} className="sr-only">
+        Click to browse for an image, or drag and drop and paste one here.
+      </p>
 
       {isDragging && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-background-0/60 backdrop-blur-sm">
@@ -133,6 +164,17 @@ function ImageDropZoneComponent({
           </p>
         </div>
       )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={accept}
+        multiple={multiple}
+        className="hidden"
+        onChange={handleFileInputChange}
+        tabIndex={-1}
+        aria-hidden="true"
+      />
     </div>
   )
 }

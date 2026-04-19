@@ -1,7 +1,6 @@
 import { toPng } from 'html-to-image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import arrowUpIconRaw from '@/assets/icons/arrow-up.svg?raw'
 import checkIconUrl from '@/assets/icons/check.svg?url'
 import closeIconRaw from '@/assets/icons/close.svg?raw'
 import lightningIconUrl from '@/assets/icons/lightning.svg?url'
@@ -141,7 +140,6 @@ export default function NotionCardGenerator() {
   const [isExporting, setIsExporting] = useState(false)
 
   const exportRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const selectedBackground =
     BACKGROUND_OPTIONS.find((option) => option.id === backgroundId) ??
@@ -213,19 +211,6 @@ export default function NotionCardGenerator() {
     setUploadedObjectUrl(null)
     setUploadedAssetSrc(null)
     setSelectedAssetId(DEFAULT_CENTER_ASSETS[0].id)
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }
-
-  const handleFileInputChange: React.ChangeEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    void applyUploadedFile(file)
   }
 
   useEffect(() => {
@@ -316,12 +301,7 @@ export default function NotionCardGenerator() {
 
         <div className="space-y-3">
           <p className="text-sm font-medium">Center image</p>
-          <ImageDropZone
-            onFiles={handleUploadedFiles}
-            title="Drop or paste an image"
-            description="Drag an image into this area or paste one from your clipboard."
-            helperText="This replaces the current center image and is included in the export."
-          />
+          <ImageDropZone onFiles={handleUploadedFiles} title="Add image" />
           <div className={centerControlsGridClass}>
             <Select
               value={selectedAssetId}
@@ -334,18 +314,6 @@ export default function NotionCardGenerator() {
                 </option>
               ))}
             </Select>
-
-            <Button
-              size="sm"
-              variant="default"
-              onClick={() => fileInputRef.current?.click()}
-              className="h-9 gap-1.5 px-3"
-              title="Upload image"
-              aria-label="Upload your own image"
-            >
-              <InlineSvgIcon svg={arrowUpIconRaw} className="size-4" />
-              <span>Upload</span>
-            </Button>
 
             {uploadedAssetSrc && (
               <Button
@@ -382,14 +350,6 @@ export default function NotionCardGenerator() {
           <p className="text-foreground-2 text-xs">
             Choose a default or upload your own PNG, JPG, or SVG.
           </p>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileInputChange}
-          />
         </div>
       </aside>
 
