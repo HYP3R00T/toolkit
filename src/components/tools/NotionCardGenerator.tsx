@@ -1,5 +1,5 @@
 import { toPng } from 'html-to-image'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import arrowUpIconRaw from '@/assets/icons/arrow-up.svg?raw'
 import checkIconUrl from '@/assets/icons/check.svg?url'
@@ -7,6 +7,7 @@ import closeIconRaw from '@/assets/icons/close.svg?raw'
 import lightningIconUrl from '@/assets/icons/lightning.svg?url'
 import userIconUrl from '@/assets/icons/user.svg?url'
 import { Button } from '@/components/ui/Button'
+import { ImageDropZone } from '@/components/ui/ImageDropZone'
 import { Select } from '@/components/ui/Select'
 import { Slider } from '@/components/ui/Slider'
 import { convertSvgToCurrentColor } from '@/lib/assets'
@@ -24,6 +25,15 @@ type CenterAsset = {
   id: string
   label: string
   src: string
+}
+
+function extractImageFilesFromItems(items?: DataTransferItemList | null) {
+  return Array.from(items ?? []).flatMap((item) => {
+    if (item.kind !== 'file' || !item.type.startsWith('image/')) return []
+
+    const file = item.getAsFile()
+    return file ? [file] : []
+  })
 }
 
 const BACKGROUND_OPTIONS: BackgroundOption[] = [
@@ -162,27 +172,40 @@ export default function NotionCardGenerator() {
     }
   }, [uploadedObjectUrl])
 
-  const applyUploadedFile = async (file: File) => {
-    if (!file.type.startsWith('image/')) return
+  const applyUploadedFile = useCallback(
+    async (file: File) => {
+      if (!file.type.startsWith('image/')) return
 
-    if (uploadedObjectUrl) {
-      URL.revokeObjectURL(uploadedObjectUrl)
-    }
+      if (uploadedObjectUrl) {
+        URL.revokeObjectURL(uploadedObjectUrl)
+      }
 
-    if (file.type === 'image/svg+xml') {
-      const svgSource = await file.text()
-      setUploadedObjectUrl(null)
-      setUploadedAssetSrc(
-        `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgSource)}`,
-      )
-    } else {
-      const nextObjectUrl = URL.createObjectURL(file)
-      setUploadedObjectUrl(nextObjectUrl)
-      setUploadedAssetSrc(nextObjectUrl)
-    }
+      if (file.type === 'image/svg+xml') {
+        const svgSource = await file.text()
+        setUploadedObjectUrl(null)
+        setUploadedAssetSrc(
+          `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgSource)}`,
+        )
+      } else {
+        const nextObjectUrl = URL.createObjectURL(file)
+        setUploadedObjectUrl(nextObjectUrl)
+        setUploadedAssetSrc(nextObjectUrl)
+      }
 
-    setSelectedAssetId('uploaded-image')
-  }
+      setSelectedAssetId('uploaded-image')
+    },
+    [uploadedObjectUrl],
+  )
+
+  const handleUploadedFiles = useCallback(
+    (files: File[]) => {
+      const nextFile = files[0]
+      if (!nextFile) return
+
+      void applyUploadedFile(nextFile)
+    },
+    [applyUploadedFile],
+  )
 
   const clearUploadedFile = () => {
     if (uploadedObjectUrl) URL.revokeObjectURL(uploadedObjectUrl)
@@ -204,6 +227,22 @@ export default function NotionCardGenerator() {
 
     void applyUploadedFile(file)
   }
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const files = extractImageFilesFromItems(event.clipboardData?.items)
+      if (files.length === 0) return
+
+      event.preventDefault()
+      handleUploadedFiles(files)
+    }
+
+    window.addEventListener('paste', handlePaste)
+
+    return () => {
+      window.removeEventListener('paste', handlePaste)
+    }
+  }, [handleUploadedFiles])
 
   const handleDownload = async () => {
     if (!exportRef.current || isExporting) return
@@ -277,6 +316,12 @@ export default function NotionCardGenerator() {
 
         <div className="space-y-3">
           <p className="text-sm font-medium">Center image</p>
+          <ImageDropZone
+            onFiles={handleUploadedFiles}
+            title="Drop or paste an image"
+            description="Drag an image into this area or paste one from your clipboard."
+            helperText="This replaces the current center image and is included in the export."
+          />
           <div className={centerControlsGridClass}>
             <Select
               value={selectedAssetId}
