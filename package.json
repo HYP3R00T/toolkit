@@ -9,7 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.8",
+    "@astrojs/check": "^0.9.9",
     "@astrojs/mdx": "^5.0.4",
     "@astrojs/react": "^5.0.4",
     "@astrojs/rss": "^4.0.18",
@@ -20,7 +20,7 @@
     "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^6.1.9",
+    "astro": "^6.2.1",
     "astro-auto-import": "^0.5.1",
     "astro-icon": "^1.1.5",
     "html-to-image": "^1.11.13",
@@ -33,7 +33,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.13",
-    "globals": "^17.5.0"
+    "@biomejs/biome": "2.4.14",
+    "globals": "^17.6.0"
   }
 }
