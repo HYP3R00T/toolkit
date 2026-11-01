@@ -9,7 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
     "@astrojs/mdx": "^7.0.8",
     "@astrojs/react": "^6.0.6",
     "@astrojs/rss": "^4.0.19",
@@ -27,7 +27,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "rehype-pretty-code": "^0.14.5",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "shiki": "^4.3.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2"
